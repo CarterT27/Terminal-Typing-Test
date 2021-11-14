@@ -2,6 +2,9 @@ import curses
 from curses import wrapper
 import time
 import random
+import os
+
+current_text = "texts/classic.txt"
 
 def start_screen(stdscr):
     stdscr.clear()
@@ -10,7 +13,7 @@ def start_screen(stdscr):
     stdscr.addstr("\nMore options:")
     stdscr.addstr("\n\tt: change theme")
     stdscr.addstr("\n\tm: change mode(currently unsupported)")
-    stdscr.addstr("\n\te: add to current text(currently unsupported)")
+    stdscr.addstr("\n\ta: add to current text(currently unsupported)")
     stdscr.addstr("\n\ts: score report(currently unsupported)")
     stdscr.refresh()
 
@@ -62,8 +65,35 @@ def change_theme(stdscr):
     curses.init_pair(1, correct_text_color, background_color)
     curses.init_pair(2, curses.COLOR_RED, background_color)
 
+def change_mode(stdscr):
+    global current_text
+    stdscr.clear()
+    stdscr.addstr(f"Current text file is: {current_text}")
+    stdscr.addstr("\nWhich text file would you like to use?")
+    i = 0
+    for file in os.listdir("./texts"):
+        stdscr.addstr(f"\n{i}: {file}")
+        i += 1
+    stdscr.refresh()
+    key = stdscr.getkey()
+
+    j = 0
+    for file in os.listdir("./texts"):
+        stdscr.addstr(f"\n{j}")
+        if int(key) == j:
+            current_text = "texts/" + file
+            break
+        j += 1
+
+def add_text(stdscr):
+    stdscr.clear()
+
+def score_report(stdscr):
+    stdscr.clear()
+
 def load_text():
-    with open("classic_texts.txt", "r") as f:
+    global current_text
+    with open(current_text, "r") as f:
         lines = f.readlines()
         return random.choice(lines).strip()
 
@@ -103,19 +133,34 @@ def wpm_test(stdscr):
             current_text.append(key)
 
 def main(stdscr):
-    start_screen(stdscr)
-    key = stdscr.getkey()
     curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+    global current_text
 
-    if key == "t":
-        change_theme(stdscr)
     while True:
-        wpm_test(stdscr)
-        stdscr.addstr(2, 0, "You completed the text! Press enter to do another test...")
+        start_screen(stdscr)
         key = stdscr.getkey()
 
-        if ord(key) == 27:
+        doTest = False
+        if key == "t":
+            change_theme(stdscr)
+        elif key == "m":
+            change_mode(stdscr)
+        elif key == "a":
+            add_text(stdscr)
+        elif key == "s":
+            score_report(stdscr)
+        elif ord(key) == 27:
             break
+        else:
+            doTest = True
+
+        while doTest:
+            wpm_test(stdscr)
+            stdscr.addstr(2, 0, "You completed the text! Press enter to do another test...")
+            key = stdscr.getkey()
+
+            if ord(key) == 27:
+                doTest = False
 
 wrapper(main)
