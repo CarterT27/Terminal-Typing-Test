@@ -11,6 +11,7 @@ def start_screen(stdscr):
     stdscr.addstr("\n\tt: change theme")
     stdscr.addstr("\n\tm: change mode(currently unsupported)")
     stdscr.addstr("\n\te: add to current text(currently unsupported)")
+    stdscr.addstr("\n\ts: score report(currently unsupported)")
     stdscr.refresh()
 
 def display_text(stdscr, target, current, wpm=0):
@@ -111,7 +112,7 @@ def main(stdscr):
         change_theme(stdscr)
     while True:
         wpm_test(stdscr)
-        stdscr.addstr(2, 0, "You completed the text! Press any key to continue...")
+        stdscr.addstr(2, 0, "You completed the text! Press enter to do another test...")
         key = stdscr.getkey()
 
         if ord(key) == 27:
