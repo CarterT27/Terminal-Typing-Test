@@ -12,8 +12,8 @@ def start_screen(stdscr):
     stdscr.addstr("\nPress enter to begin!")
     stdscr.addstr("\nMore options:")
     stdscr.addstr("\n\tt: change theme")
-    stdscr.addstr("\n\tm: change mode(currently unsupported)")
-    stdscr.addstr("\n\ta: add to current text(currently unsupported)")
+    stdscr.addstr("\n\tm: change mode")
+    stdscr.addstr("\n\ta: add to current text")
     stdscr.addstr("\n\ts: score report(currently unsupported)")
     stdscr.refresh()
 
@@ -86,7 +86,37 @@ def change_mode(stdscr):
         j += 1
 
 def add_text(stdscr):
+    global current_text
     stdscr.clear()
+    stdscr.addstr(f"The current text file is: {current_text}")
+    stdscr.addstr("\nPlease input a new line, or press esc to cancel.\nOnce you are done press esc.")
+    stdscr.refresh()
+    new_line = []
+    while True:
+        key = stdscr.getkey()
+        stdscr.clear()
+        if ord(key) == 27:
+            break
+        if key in ("KEY_BACKSPACE", '\b', "\x7f"):
+            if len(new_line) > 0:
+                new_line.pop()
+        else:
+            new_line.append(key)
+        stdscr.addstr("".join(new_line))
+        stdscr.refresh()
+    if len(new_line) > 0:
+        stdscr.clear()
+        stdscr.addstr("Your new line is:")
+        stdscr.addstr("\n" + "".join(new_line).strip())
+        stdscr.addstr("\nPress esc to cancel, enter to save.")
+        stdscr.refresh()
+        key = stdscr.getkey()
+        if ord(key) == 27:
+            pass
+        else:
+            new_line = "".join(new_line).strip()
+            with open(current_text, "a") as f:
+                f.writelines("\n" + new_line)
 
 def score_report(stdscr):
     stdscr.clear()
