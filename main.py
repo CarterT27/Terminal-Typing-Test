@@ -154,8 +154,12 @@ def wpm_test(stdscr):
         if current_text == []:
             start_time = time.time()
 
-        if ord(key) == 27: #If user hits escape key
-            break
+        try:
+            if ord(key) == 27: #If user hits escape key
+                break
+        except:
+            print()
+
         if key in ("KEY_BACKSPACE", '\b', "\x7f"):
             if len(current_text) > 0:
                 current_text.pop()
