@@ -5,6 +5,7 @@ import random
 import os
 
 current_text = "texts/classic.txt"
+wpm = 0
 
 def start_screen(stdscr):
     stdscr.clear()
@@ -120,6 +121,34 @@ def add_text(stdscr):
 
 def score_report(stdscr):
     stdscr.clear()
+    scores = []
+    sum_of_scores = 0
+    high_score = 0
+    low_score = 1000
+    with open("scores.txt", "r") as f:
+        lines = f.readlines()
+        for line in lines:
+            scores.append(line)
+            sum_of_scores += int(line)
+            if int(line) > high_score:
+                high_score = int(line)
+            if int(line) < low_score:
+                low_score = int(line)
+    stdscr.addstr(f"\nAverage WPM: {sum_of_scores/len(scores)}")
+    stdscr.addstr(f"\nHigh Score: {high_score}")
+    stdscr.addstr(f"\nLow Score: {low_score}")
+    stdscr.getkey()
+
+def add_score(score):
+    with open("scores.txt", "a") as f:
+        f.writelines("\n" + str(score))
+    lines = []
+    with open("scores.txt", "r") as f:
+        lines = f.readlines()
+    with open("scores.txt", "w") as f:
+        for number, line in enumerate(lines):
+            if line != "\n":
+                f.write(line)
 
 def load_text():
     global current_text
@@ -128,6 +157,7 @@ def load_text():
         return random.choice(lines).strip()
 
 def wpm_test(stdscr):
+    global wpm
     target_text = load_text()
     current_text = []
     wpm = 0
@@ -170,6 +200,7 @@ def main(stdscr):
     curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
     global current_text
+    global wpm
 
     while True:
         start_screen(stdscr)
@@ -191,6 +222,7 @@ def main(stdscr):
 
         while doTest:
             wpm_test(stdscr)
+            add_score(wpm)
             stdscr.addstr(2, 0, "You completed the text! Press enter to do another test...")
             key = stdscr.getkey()
 
